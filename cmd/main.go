@@ -30,7 +30,7 @@ func PostHendler(w http.ResponseWriter, r *http.Request) {
 func DelHendler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
 		counter--
-		fmt.Fprintln(w, "Counter уменьшен на один")
+		fmt.Fprintln(w, "Counter уменьшен на 1")
 	} else {
 		fmt.Fprintln(w, "Поддерживается только метод DELETE")
 
