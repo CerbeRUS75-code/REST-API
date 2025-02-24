@@ -1,46 +1,43 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
+
+	"github.com/labstack/echo/v4"
 )
 
-var counter int
-
-func GetHendler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-
-		fmt.Fprintln(w, "Counter равен", strconv.Itoa(counter))
-	} else {
-		fmt.Fprintln(w, "Поддерживается только метод GET")
-
-	}
+type Message struct {
+	Text string `json:"text"`
 }
-func PostHendler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		counter++
-		fmt.Fprintln(w, "Counter увеличен на 1")
-	} else {
-		fmt.Fprintln(w, "Поддерживается только метод POST")
-
-	}
+type Response struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
 }
 
-func DelHendler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodDelete {
-		counter--
-		fmt.Fprintln(w, "Counter уменьшен на 1")
-	} else {
-		fmt.Fprintln(w, "Поддерживается только метод DELETE")
+var messages []Message
 
+func GetHendler(c echo.Context) error {
+	return c.JSON(http.StatusOK, &messages)
+}
+
+func PostHendler(c echo.Context) error {
+	var message Message
+	if err := c.Bind(&message); err != nil {
+		return c.JSON(http.StatusBadRequest, Response{
+			Status:  "Error",
+			Message: "Не смогли добавить сообщение",
+		})
 	}
+	messages = append(messages, message)
+	return c.JSON(http.StatusOK, Response{
+		Status:  "Success",
+		Message: "Сообщение успешно добавлено",
+	})
 }
 
 func main() {
-	http.HandleFunc("/get", GetHendler)
-	http.HandleFunc("/post", PostHendler)
-	http.HandleFunc("/delete", DelHendler)
-	http.ListenAndServe("localhost:8080", nil)
-
+	e := echo.New()
+	e.GET("/messages", GetHendler)
+	e.POST("/messages", PostHendler)
+	e.Start(":8080")
 }
