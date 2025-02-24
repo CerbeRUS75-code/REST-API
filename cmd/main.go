@@ -25,13 +25,13 @@ func PostHendler(c echo.Context) error {
 	if err := c.Bind(&message); err != nil {
 		return c.JSON(http.StatusBadRequest, Response{
 			Status:  "Error",
-			Message: "Не смогли добавить сообщение",
+			Message: "Can not added message",
 		})
 	}
 	messages = append(messages, message)
 	return c.JSON(http.StatusOK, Response{
 		Status:  "Success",
-		Message: "Сообщение успешно добавлено",
+		Message: "Message have been added succsesfuly",
 	})
 }
 
