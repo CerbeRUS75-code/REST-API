@@ -1,7 +1,7 @@
 package main
 
 import (
-	"API/hendels"
+	hendels "API/handels"
 
 	"github.com/labstack/echo/v4"
 )
