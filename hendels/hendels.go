@@ -12,7 +12,7 @@ import (
 var nextID = 1
 var messages = make(map[int]models.Message)
 
-func GetHendler(c echo.Context) error {
+func GetHandler(c echo.Context) error {
 	var msgSlice []models.Message
 
 	for _, msg := range messages {
@@ -26,7 +26,7 @@ func GetHendler(c echo.Context) error {
 	return c.JSON(http.StatusOK, &msgSlice)
 }
 
-func PostHendler(c echo.Context) error {
+func PostHandler(c echo.Context) error {
 	var message models.Message
 	if err := c.Bind(&message); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response{
@@ -43,7 +43,7 @@ func PostHendler(c echo.Context) error {
 	})
 }
 
-func PatchHendler(c echo.Context) error {
+func PatchHandler(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -74,7 +74,7 @@ func PatchHendler(c echo.Context) error {
 	})
 }
 
-func DeleteHendler(c echo.Context) error {
+func DeleteHandler(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {

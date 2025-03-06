@@ -16,7 +16,7 @@ func TestGetHendler(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if err := GetHendler(c); err != nil {
+	if err := GetHandler(c); err != nil {
 		t.Errorf("Error was not expected: %v", err)
 	}
 
@@ -34,7 +34,7 @@ func TestPostHendler(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if err := PostHendler(c); err != nil {
+	if err := PostHandler(c); err != nil {
 		t.Errorf("Error was not expected: %v", err)
 	}
 
@@ -49,7 +49,7 @@ func TestDeleteHendler(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if err := DeleteHendler(c); err != nil {
+	if err := DeleteHandler(c); err != nil {
 		t.Errorf("Error was not expected: %v", err)
 	}
 
@@ -67,7 +67,7 @@ func TestPatchHendler(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if err := PatchHendler(c); err != nil {
+	if err := PatchHandler(c); err != nil {
 		t.Errorf("Error was not expected: %v", err)
 	}
 
@@ -84,7 +84,7 @@ func TestPostHendlerInvalidJSON(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if err := PostHendler(c); err == nil {
+	if err := PostHandler(c); err == nil {
 		t.Error("Expected an error, got none")
 	}
 }
@@ -95,7 +95,7 @@ func TestDeleteHendlerNonExistentID(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if err := DeleteHendler(c); err != nil {
+	if err := DeleteHandler(c); err != nil {
 		t.Errorf("Error was not expected: %v", err)
 	}
 

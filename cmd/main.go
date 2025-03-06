@@ -8,9 +8,9 @@ import (
 
 func main() {
 	e := echo.New()
-	e.GET("/messages", hendels.GetHendler)
-	e.POST("/messages", hendels.PostHendler)
-	e.PATCH("/messages/:id", hendels.PatchHendler)
-	e.DELETE("/messages/:id", hendels.DeleteHendler)
+	e.GET("/messages", hendels.GetHandler)
+	e.POST("/messages", hendels.PostHandler)
+	e.PATCH("/messages/:id", hendels.PatchHandler)
+	e.DELETE("/messages/:id", hendels.DeleteHandler)
 	e.Start(":8080")
 }
