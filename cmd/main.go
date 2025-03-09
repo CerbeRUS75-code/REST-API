@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	hendels.InitDB()
 	e := echo.New()
 	e.GET("/messages", hendels.GetHandler)
 	e.POST("/messages", hendels.PostHandler)

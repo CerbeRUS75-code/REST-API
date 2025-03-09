@@ -2,28 +2,39 @@ package hendels
 
 import (
 	"API/models"
+	"log"
 	"net/http"
-	"sort"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var nextID = 1
-var messages = make(map[int]models.Message)
+var db *gorm.DB
 
-func GetHandler(c echo.Context) error {
-	var msgSlice []models.Message
-
-	for _, msg := range messages {
-		msgSlice = append(msgSlice, msg)
+func InitDB() {
+	dataSourceName := "host=localhost user=postgres password=123 dbname=postgres port=5432 sslmode=disable"
+	var err error
+	db, err = gorm.Open(postgres.Open(dataSourceName), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("Не удалось подключиться к базе данных: %v", err)
 	}
 
-	sort.Slice(msgSlice, func(i, j int) bool {
-		return msgSlice[i].ID < msgSlice[j].ID
-	})
+	db.AutoMigrate(&models.Message{})
+}
 
-	return c.JSON(http.StatusOK, &msgSlice)
+func GetHandler(c echo.Context) error {
+	var messages []models.Message
+
+	if err := db.Find(&messages).Error; err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response{
+			Status:  "Error",
+			Message: "Can not find messages",
+		})
+	}
+
+	return c.JSON(http.StatusOK, &messages)
 }
 
 func PostHandler(c echo.Context) error {
@@ -34,9 +45,14 @@ func PostHandler(c echo.Context) error {
 			Message: "Can not added message",
 		})
 	}
-	message.ID = nextID
-	nextID++
-	messages[message.ID] = message
+
+	if err := db.Create(&message).Error; err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response{
+			Status:  "Error",
+			Message: "Can not created message",
+		})
+	}
+
 	return c.JSON(http.StatusOK, models.Response{
 		Status:  "Success",
 		Message: "Message have been added succsesfuly",
@@ -57,17 +73,17 @@ func PatchHandler(c echo.Context) error {
 	if err := c.Bind(&updatedMessage); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response{
 			Status:  "Error",
-			Message: "Can not update the message",
+			Message: "Invalid input",
 		})
 	}
-	if _, exits := messages[id]; !exits {
+
+	if err := db.Model(&models.Message{}).Where("id = ?", id).Update("text", updatedMessage.Text).Error; err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response{
 			Status:  "Error",
-			Message: "Message was not found",
+			Message: "Can not updated message",
 		})
 	}
-	updatedMessage.ID = id
-	messages[id] = updatedMessage
+
 	return c.JSON(http.StatusOK, models.Response{
 		Status:  "Success",
 		Message: "Message was updated",
@@ -84,14 +100,12 @@ func DeleteHandler(c echo.Context) error {
 		})
 	}
 
-	if _, exits := messages[id]; !exits {
+	if err := db.Delete(&models.Message{}, id).Error; err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response{
 			Status:  "Error",
-			Message: "Message was not found",
+			Message: "Can not deleted message",
 		})
 	}
-
-	delete(messages, id)
 	return c.JSON(http.StatusOK, models.Response{
 		Status:  "Success",
 		Message: "Message was deleted",
